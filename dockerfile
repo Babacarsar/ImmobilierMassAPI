@@ -1,43 +1,30 @@
-# ✅ Dockerfile (placer à la racine de ton projet Laravel)
-
 FROM php:8.2-apache
 
-# Installer extensions utiles
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    unzip \
-    curl \
-    git \
-    libzip-dev \
-    && docker-php-ext-install pdo pdo_mysql zip
+    git unzip libpq-dev libonig-dev libzip-dev \
+    && docker-php-ext-install pdo pdo_mysql pdo_pgsql zip
 
-# Activer mod_rewrite
+# Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
-# Copier projet
-COPY . /var/www/html/
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Travailler dans le dossier Laravel
 WORKDIR /var/www/html
 
-# Donner les bons droits
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage
+# Copy app files
+COPY . .
 
-# Installer Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader
 
-# Installer dépendances
-RUN composer install --no-interaction --optimize-autoloader
+# Cache config & routes (APP_KEY sera fourni via env Render)
+RUN php artisan config:clear && php artisan route:clear
 
-# Clear + cache Laravel
-RUN php artisan config:clear && \
-    php artisan cache:clear && \
-    php artisan route:clear && \
-    php artisan view:clear && \
-    php artisan config:cache
+# Set Apache DocumentRoot to /public
+RUN sed -i 's#/var/www/html#/var/www/html/public#g' /etc/apache2/sites-available/000-default.conf
 
 EXPOSE 80
+
+CMD ["apache2-foreground"]
