@@ -2,6 +2,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Image;
+use Illuminate\Support\Facades\Storage;
+
 
 class Property extends Model
 {
@@ -29,4 +32,15 @@ class Property extends Model
     {
         return $this->hasOne(Image::class)->where('is_main', true);
     }
+
+    protected static function booted()
+{
+    static::deleting(function ($property) {
+        foreach ($property->images as $image) {
+            if ($image->path) {
+                Storage::disk('public')->delete($image->path);
+            }
+        }
+    });
+}
 }

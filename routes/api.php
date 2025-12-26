@@ -28,3 +28,11 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('admin/properties', PropertyController::class);
     });
 });
+// Auth admin (API token)
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+
+// Routes admin protégées
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('admin/properties', PropertyController::class);
+});

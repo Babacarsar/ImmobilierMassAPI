@@ -7,6 +7,8 @@ use App\Http\Controllers\Admin\StaffTechniqueAdminController;
 use App\Http\Controllers\Admin\DashboardAdminController;
 use App\Http\Controllers\Admin\ActualiteAdminController;
 use App\Http\Controllers\Admin\MediaAdminController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\LogoutController;
 
 
 
@@ -23,52 +25,40 @@ use App\Http\Controllers\Admin\MediaAdminController;
 
 
 
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [DashboardAdminController::class, 'index'])->name('dashboard');
-});
-
-Route::prefix('admin')->group(function () {
-    Route::get('/actualites', [ActualiteAdminController::class, 'index'])->name('admin.actualites.index');
-    Route::get('/actualites/create', [ActualiteAdminController::class, 'create'])->name('admin.actualites.create');
-    Route::post('/actualites', [ActualiteAdminController::class, 'store'])->name('admin.actualites.store');
-    Route::get('/actualites/{actualite}/edit', [ActualiteAdminController::class, 'edit'])->name('admin.actualites.edit');
-    Route::put('/actualites/{actualite}', [ActualiteAdminController::class, 'update'])->name('admin.actualites.update');
-    Route::delete('/actualites/{actualite}', [ActualiteAdminController::class, 'destroy'])->name('admin.actualites.destroy');
-});
-
-Route::prefix('admin')->group(function () {
-    Route::get('/joueurs', [JoueurAdminController::class, 'index'])->name('admin.joueurs.index');
-    Route::get('/joueurs/create', [JoueurAdminController::class, 'create'])->name('admin.joueurs.create');
-    Route::post('/joueurs', [JoueurAdminController::class, 'store'])->name('admin.joueurs.store');
-    Route::get('/joueurs/{joueur}/edit', [JoueurAdminController::class, 'edit'])->name('admin.joueurs.edit');
-    Route::put('/joueurs/{joueur}', [JoueurAdminController::class, 'update'])->name('admin.joueurs.update');
-    Route::delete('/joueurs/{joueur}', [JoueurAdminController::class, 'destroy'])->name('admin.joueurs.destroy');
-});
+use App\Http\Controllers\Admin\PropertyController as AdminPropertyController;
 
 
-
-Route::prefix('admin')->group(function () {
-    Route::get('/staff', [StaffTechniqueAdminController::class, 'index'])->name('admin.staff.index');
-    Route::get('/staff/create', [StaffTechniqueAdminController::class, 'create'])->name('admin.staff.create');
-    Route::post('/staff', [StaffTechniqueAdminController::class, 'store'])->name('admin.staff.store');
-    Route::get('/staff/{staff}/edit', [StaffTechniqueAdminController::class, 'edit'])->name('admin.staff.edit');
-    Route::put('/staff/{staff}', [StaffTechniqueAdminController::class, 'update'])->name('admin.staff.update');
-    Route::delete('/staff/{staff}', [StaffTechniqueAdminController::class, 'destroy'])->name('admin.staff.destroy');
-});
+// TODO plus tard : vraie auth admin (login/logout middleware)
 
 Route::prefix('admin')->name('admin.')->group(function () {
-    Route::resource('categories', CategorieAdminController::class);
+
+    // Dashboard simple
+    Route::get('/', function () {
+        return redirect()->route('admin.properties.index');
+    })->name('dashboard');
+
+    // CRUD biens
+    Route::resource('properties', AdminPropertyController::class);
 });
 
+Route::get('/login', [LoginController::class, 'showLoginForm'])
+    ->middleware('guest')
+    ->name('login');
 
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::resource('media', MediaAdminController::class);
-});
+Route::post('/login', [LoginController::class, 'login'])
+    ->middleware('guest');
 
-Route::get('/test-cloud', function () {
-    return config('cloudinary');
-});
+Route::post('/logout', LogoutController::class)
+    ->middleware('auth')
+    ->name('logout');
 
+Route::prefix('admin')
+    ->name('admin.')
+    ->middleware('auth')
+    ->group(function () {
+        Route::get('/', fn () => redirect()->route('admin.properties.index'))
+            ->name('dashboard');
 
-
+        Route::resource('properties', AdminPropertyController::class);
+    });
 
