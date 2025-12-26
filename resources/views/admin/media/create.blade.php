@@ -1,0 +1,80 @@
+@extends('layouts.admin')
+
+@section('content')
+<div class="container mt-4">
+    <h2>Ajouter un média</h2>
+
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    @if (session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    {{-- FORMULAIRE --}}
+    <form action="{{ route('admin.media.store') }}" method="POST">
+        @csrf
+
+        {{-- Titre --}}
+        <div class="mb-3">
+            <label class="form-label">Titre (facultatif)</label>
+            <input type="text" name="title" class="form-control" placeholder="Titre du média" value="{{ old('title') }}">
+        </div>
+
+        {{-- Type --}}
+        <div class="mb-3">
+            <label class="form-label">Type</label>
+            <select name="type" id="type_input" class="form-select" required>
+                <option value="">-- Sélectionner --</option>
+                <option value="image">Image</option>
+                <option value="video">Vidéo</option>
+            </select>
+        </div>
+
+        {{-- URL Cloudinary --}}
+        <div class="mb-3">
+            <label class="form-label">Fichier (Cloudinary)</label>
+            <div class="input-group">
+                <input type="text" name="url" id="url_input" class="form-control" placeholder="URL du média" readonly required>
+                <button type="button" class="btn btn-outline-primary" id="upload_widget_btn">Uploader</button>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-success">Enregistrer</button>
+        <a href="{{ route('admin.media.index') }}" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+
+{{-- Widget Cloudinary --}}
+<script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
+<script>
+    const widget = cloudinary.createUploadWidget({
+        cloudName: 'df2jerxfy', // 🔁 Remplace bien par ton cloudName
+        uploadPreset: 'girona_unsigned', // 🔁 Assure-toi qu’il est bien actif
+        folder: 'media_girona',
+        multiple: false,
+        resourceType: 'auto'
+    }, (error, result) => {
+        if (!error && result && result.event === "success") {
+            const url = result.info.secure_url;
+            const type = result.info.resource_type; // image / video
+
+            document.getElementById("url_input").value = url;
+            document.getElementById("type_input").value = type;
+        } else if (error) {
+            alert("Erreur lors de l'upload : " + error.message);
+        }
+    });
+
+    document.getElementById("upload_widget_btn").addEventListener("click", function () {
+        widget.open();
+    }, false);
+</script>
+@endsection
