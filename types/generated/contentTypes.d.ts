@@ -441,16 +441,38 @@ export interface ApiListingListing extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    address: Schema.Attribute.String;
+    bathrooms: Schema.Attribute.Integer;
+    bedrooms: Schema.Attribute.Integer;
+    city: Schema.Attribute.String & Schema.Attribute.Required;
+    cover: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    Currency: Schema.Attribute.Enumeration<['FCFA', 'EUR', 'USD']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'FCFA'>;
+    dealType: Schema.Attribute.Enumeration<['Location', 'Vente']> &
+      Schema.Attribute.Required;
+    description: Schema.Attribute.Blocks;
+    district: Schema.Attribute.String;
+    gallery: Schema.Attribute.Media<'files' | 'images', true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::listing.listing'
     > &
       Schema.Attribute.Private;
+    price: Schema.Attribute.BigInteger & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
+    rooms: Schema.Attribute.Integer;
+    slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
+    Statut: Schema.Attribute.Enumeration<['Disponible', 'Non Disponible']> &
+      Schema.Attribute.Required;
+    SurfaceM2: Schema.Attribute.Integer & Schema.Attribute.Required;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    type: Schema.Attribute.Enumeration<['Appartement', 'Terrain']> &
+      Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

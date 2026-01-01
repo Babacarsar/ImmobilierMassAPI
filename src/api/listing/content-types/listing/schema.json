@@ -10,5 +10,95 @@
     "draftAndPublish": true
   },
   "pluginOptions": {},
-  "attributes": {}
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title",
+      "required": true
+    },
+    "city": {
+      "type": "string",
+      "required": true
+    },
+    "district": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "type": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "Appartement",
+        "Terrain"
+      ]
+    },
+    "dealType": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "Location",
+        "Vente"
+      ]
+    },
+    "Statut": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "Disponible",
+        "Non Disponible"
+      ]
+    },
+    "price": {
+      "type": "biginteger",
+      "required": true
+    },
+    "Currency": {
+      "type": "enumeration",
+      "required": true,
+      "default": "FCFA",
+      "enum": [
+        "FCFA",
+        "EUR",
+        "USD"
+      ]
+    },
+    "SurfaceM2": {
+      "type": "integer",
+      "required": true
+    },
+    "rooms": {
+      "type": "integer"
+    },
+    "bedrooms": {
+      "type": "integer"
+    },
+    "bathrooms": {
+      "type": "integer"
+    },
+    "description": {
+      "type": "blocks"
+    },
+    "cover": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "gallery": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "files",
+        "images"
+      ]
+    }
+  }
 }
