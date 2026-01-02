@@ -430,6 +430,39 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
+  collectionName: 'categories';
+  info: {
+    displayName: 'category';
+    pluralName: 'categories';
+    singularName: 'category';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    listing: Schema.Attribute.Relation<'manyToOne', 'api::listing.listing'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::category.category'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    order: Schema.Attribute.Integer;
+    publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiListingListing extends Struct.CollectionTypeSchema {
   collectionName: 'listings';
   info: {
@@ -444,6 +477,10 @@ export interface ApiListingListing extends Struct.CollectionTypeSchema {
     address: Schema.Attribute.String;
     bathrooms: Schema.Attribute.Integer;
     bedrooms: Schema.Attribute.Integer;
+    categories: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::category.category'
+    >;
     city: Schema.Attribute.String & Schema.Attribute.Required;
     cover: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
     createdAt: Schema.Attribute.DateTime;
@@ -989,6 +1026,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::category.category': ApiCategoryCategory;
       'api::listing.listing': ApiListingListing;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
