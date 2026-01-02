@@ -105,6 +105,12 @@
         "files",
         "images"
       ]
+    },
+    "contact_message": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::contact-message.contact-message",
+      "mappedBy": "listing"
     }
   }
 }
